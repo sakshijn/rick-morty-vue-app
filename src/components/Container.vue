@@ -34,6 +34,7 @@
 import Filter from "./Filters.vue";
 import Character from "./Character.vue";
 import Search from "./Search.vue";
+//import Vuex from 'vuex';
 
 export default {
   props: {
@@ -49,8 +50,8 @@ export default {
       filterName: "",
       filterGender: [],
       filterSpecies: [],
-      sort: "asc",
-      filteredItems: this.items
+      sort: "asc"
+      //filteredItems: this.items
     };
   },
   methods: {
@@ -83,27 +84,35 @@ export default {
       );
     }
   },
+  created(){
+    this.$store.dispatch('fetchItems');
+  },
+  computed: {
+    filteredItems() {
+      return this.$store.getters.getFilteredItems;
+    }
+  },
   mounted() {
-    fetch("https://rickandmortyapi.com/api/character/")
-      .then(res => res.json())
-      .then(
-        result => {
-          this.isLoaded = true;
-          this.items = result.results;
-          this.specie = result.results
-            .map(item => item.species)
-            .filter((x, i, a) => a.indexOf(x) === i);
-          this.filterSpecies = this.specie;
-          this.gender = result.results
-            .map(item => item.gender)
-            .filter((x, i, a) => a.indexOf(x) === i);
-          this.filterGender = this.gender;
-        },
-        error => {
-          this.isLoaded = true;
-          this.error = error;
-        }
-      );
+    // fetch("https://rickandmortyapi.com/api/character/")
+    //   .then(res => res.json())
+    //   .then(
+    //     result => {
+    //       this.isLoaded = true;
+    //       this.items = result.results;
+    //       this.specie = result.results
+    //         .map(item => item.species)
+    //         .filter((x, i, a) => a.indexOf(x) === i);
+    //       this.filterSpecies = this.specie;
+    //       this.gender = result.results
+    //         .map(item => item.gender)
+    //         .filter((x, i, a) => a.indexOf(x) === i);
+    //       this.filterGender = this.gender;
+    //     },
+    //     error => {
+    //       this.isLoaded = true;
+    //       this.error = error;
+    //     }
+    //   );
   }
 };
 </script>
