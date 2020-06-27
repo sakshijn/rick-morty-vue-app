@@ -34,8 +34,8 @@
 <script>
 export default {
   props: {
-    species: Array,
-    genders: Array
+    species: { type: Array, required: true, default: () => [] },
+    genders: { type: Array, required: true, default: () => [] }
   },
   data: function() {
     return {
@@ -55,7 +55,7 @@ export default {
 </script>
 
 <style scoped>
-.filter-species, 
+.filter-species,
 .filter-gender {
   border: 1px solid;
   margin-top: 20px;

@@ -31,9 +31,6 @@ import Search from "./Search.vue";
 import { mapGetters } from "vuex";
 
 export default {
-  props: {
-    msg: String
-  },
   data: function() {
     return {
       sort: "asc"
