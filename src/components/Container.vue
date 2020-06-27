@@ -6,23 +6,17 @@
         <filters
           :species="specie"
           :genders="gender"
-          @updateGenderFilter="filterGender = $event"
-          @updateSpecieFilter="filterSpecies= $event"
+          @updateGenderFilter="filterByGender($event)"
+          @updateSpecieFilter="filterBySpecie($event)"
         ></filters>
       </div>
       <div class="col-sm-9">
         <div class="row">
           <div class="col-sm-12 col-md-9">
-            <search
-              :onChange="updateFilter"
-              :sort="sort"
-              @onSort="sortById($event)"
-            ></search>
+            <search :onChange="filterByName" :sort="sort" @onSort="sortById($event)"></search>
           </div>
           <div class="col-sm-12">
-            <character
-              :items="filteredItems"
-            ></character>
+            <character :items="filteredItems"></character>
           </div>
         </div>
       </div>
@@ -34,7 +28,7 @@
 import Filter from "./Filters.vue";
 import Character from "./Character.vue";
 import Search from "./Search.vue";
-//import Vuex from 'vuex';
+import { mapGetters } from "vuex";
 
 export default {
   props: {
@@ -42,28 +36,21 @@ export default {
   },
   data: function() {
     return {
-      error: null,
-      isLoaded: false,
-      items: [],
-      specie: [],
-      gender: [],
-      filterName: "",
-      filterGender: [],
-      filterSpecies: [],
       sort: "asc"
-      //filteredItems: this.items
     };
   },
   methods: {
-    updateFilter(event) {
-      this.filterName = event.target.value;
-    },
     sortById(order) {
-      let filteredList =
-        order === "asc"
-          ? this.items.sort((a, b) => (a.id > b.id ? 1 : -1))
-          : this.items.sort((a, b) => (a.id < b.id ? 1 : -1));
-      this.filteredItems = filteredList || this.items;
+      this.$store.commit("sortItems", { order });
+    },
+    filterByGender(event) {
+      this.$store.commit("filterGender", { filterGender: event });
+    },
+    filterBySpecie(event) {
+      this.$store.commit("filterSpecies", { filterSpecies: event });
+    },
+    filterByName() {
+      this.$store.commit("filterName", { filterName: event.target.value });
     }
   },
   components: {
@@ -71,48 +58,11 @@ export default {
     search: Search,
     filters: Filter
   },
-  watch: {
-    filterGender() {
-      this.filteredItems = this.items.filter(item => this.filterGender.length > 0 ? this.filterGender.includes(item.gender) : item);
-    },
-    filterSpecies() {
-      this.filteredItems = this.items.filter(item => this.filterSpecies.length > 0 ? this.filterSpecies.includes(item.species) : item);
-    },
-    filterName() {
-      this.filteredItems = this.items.filter(item =>
-        item.name.toLowerCase().includes(this.filterName.toLowerCase())
-      );
-    }
-  },
-  created(){
-    this.$store.dispatch('fetchItems');
+  created() {
+    this.$store.dispatch("fetchItems");
   },
   computed: {
-    filteredItems() {
-      return this.$store.getters.getFilteredItems;
-    }
-  },
-  mounted() {
-    // fetch("https://rickandmortyapi.com/api/character/")
-    //   .then(res => res.json())
-    //   .then(
-    //     result => {
-    //       this.isLoaded = true;
-    //       this.items = result.results;
-    //       this.specie = result.results
-    //         .map(item => item.species)
-    //         .filter((x, i, a) => a.indexOf(x) === i);
-    //       this.filterSpecies = this.specie;
-    //       this.gender = result.results
-    //         .map(item => item.gender)
-    //         .filter((x, i, a) => a.indexOf(x) === i);
-    //       this.filterGender = this.gender;
-    //     },
-    //     error => {
-    //       this.isLoaded = true;
-    //       this.error = error;
-    //     }
-    //   );
+    ...mapGetters(["filteredItems", "specie", "gender"])
   }
 };
 </script>
